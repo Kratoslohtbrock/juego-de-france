@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego: Negacion en frances</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: rgba(15, 26, 57, 0.95);
+      --accent: #6adeff;
+      --accent-2: #ff6fa3;
+      --text: #eef6ff;
+      --text-muted: #adb8ce;
+      --success: #4ee5a1;
+      --danger: #ff7a7a;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: radial-gradient(circle at top left, rgba(106, 222, 255, 0.18), transparent 25%),
+                  radial-gradient(circle at bottom right, rgba(255, 111, 163, 0.16), transparent 25%),
+                  linear-gradient(180deg, #07111f 0%, #0b1632 100%);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(1200px, 100%);
+      min-height: 760px;
+      border-radius: 32px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(11, 18, 32, 0.96), rgba(5, 9, 21, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .hero-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(106, 222, 255, 0.12), transparent 24%),
+                  radial-gradient(circle at right center, rgba(255, 111, 163, 0.12), transparent 22%);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      height: 100%;
+    }
+
+    .screen {
+      padding: 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 3.5vw, 4rem);
+      letter-spacing: -0.04em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .card {
+      background: rgba(8, 17, 32, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card.stretch {
+      justify-content: space-between;
+    }
+
+    .field {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .field label {
+      min-width: 160px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .field input[type="number"], .field input[type="text"], .field select {
+      width: 100%;
+      max-width: 220px;
+      border: none;
+      outline: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .field input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .button {
+      width: fit-content;
+      border: none;
+      border-radius: 18px;
+      padding: 16px 30px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      color: #081020;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 32px rgba(106, 222, 255, 0.2);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .sidebar {
+      padding: 36px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar h2 {
+      font-size: 1.4rem;
+    }
+
+    .leaderboard {
+      display: grid;
+      gap: 14px;
+    }
+
+    .leaderboard-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .leaderboard-item strong {
+      color: var(--text);
+    }
+
+    .leaderboard-item span {
+      color: var(--accent);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .current-turn-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .player-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 12px 18px;
+      color: var(--accent);
+      font-weight: 700;
+      width: fit-content;
+      animation: pulse 2s ease infinite;
+    }
+
+    .phrase-box {
+      display: grid;
+      gap: 20px;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 260px;
+      justify-content: center;
+    }
+
+    .phrase-box .hint {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+
+    .phrase-main {
+      font-size: clamp(2rem, 3.2vw, 4rem);
+      letter-spacing: 0.01em;
+      line-height: 1.05;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .option {
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      text-align: center;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .option:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .option.selected {
+      border-color: var(--accent);
+      background: rgba(106, 222, 255, 0.2);
+    }
+
+    .fill-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 12px;
+    }
+
+    .action-buttons button {
+      min-height: 90px;
+      border-radius: 24px;
+      font-size: 1.15rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.22);
+    }
+
+    .verify {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #081020;
+    }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.2rem;
+      padding: 16px;
+      border-radius: 16px;
+      display: none;
+    }
+
+    .feedback.correct {
+      background: rgba(78, 229, 161, 0.2);
+      color: var(--success);
+    }
+
+    .feedback.incorrect {
+      background: rgba(255, 122, 122, 0.2);
+      color: var(--danger);
+    }
+
+    .small-note {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+    }
+
+    .rideout {
+      display: none;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .rideout.show {
+      display: flex;
+    }
+
+    .podium {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      align-items: end;
+      margin-top: 30px;
+    }
+
+    .podium-card {
+      position: relative;
+      border-radius: 28px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      display: grid;
+      gap: 16px;
+    }
+
+    .podium-card span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .podium-card strong {
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+
+    .podium-card .step {
+      position: absolute;
+      inset: auto 20px 20px;
+      height: 80px;
+      width: calc(100% - 40px);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.06);
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .podium-card.first .step { background: rgba(110, 222, 255, 0.13); }
+    .podium-card.second .step { background: rgba(255, 111, 163, 0.12); }
+    .podium-card.third .step { background: rgba(184, 137, 255, 0.12); }
+
+    .confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      opacity: 0.9;
+      border-radius: 3px;
+      animation: fall 2.5s ease-in infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(760px) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    @media (max-width: 1080px) {
+      .grid { grid-template-columns: 1fr; }
+      .sidebar { border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
+      .podium { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="hero-glow"></div>
+    <div class="grid">
+      <section class="screen" id="screen">
+        <div class="card" id="startScreen">
+          <div>
+            <h1>Juego de Negacion en Frances</h1>
+            <p>Perfecto para grupos. Elige modo individual o por equipos, configura y juega rondas de preguntas sobre negacion en frances.</p>
+          </div>
+          <div class="field">
+            <label for="gameMode">Modo de juego</label>
+            <select id="gameMode">
+              <option value="individual">Modo Individual</option>
+              <option value="teams">Modo por Equipos</option>
+            </select>
+          </div>
+          <div id="individualConfig" class="card">
+            <div class="field">
+              <label for="playerCount">Número de jugadores</label>
+              <input id="playerCount" type="number" min="2" max="14" value="4" />
+            </div>
+            <div class="card" id="namesContainer"></div>
+          </div>
+          <div id="teamsConfig" class="card" style="display:none;">
+            <div class="field">
+              <label for="teamCount">Número de equipos</label>
+              <input id="teamCount" type="number" min="2" max="4" value="2" />
+            </div>
+            <div class="field">
+              <label for="playersPerTeam">Jugadores por equipo</label>
+              <input id="playersPerTeam" type="number" min="2" max="6" value="2" />
+            </div>
+            <div class="card" id="teamsContainer"></div>
+          </div>
+          <button class="button" id="startButton">Iniciar partida</button>
+          <p class="small-note">El moderador controla el juego desde la laptop. Las respuestas se verifican automáticamente.</p>
+        </div>
+
+        <div class="card current-turn-card" id="gameScreen" style="display:none;">
+          <div class="player-tag" id="currentTurnTag">Turno de Equipe A - Jugador: Diego</div>
+          <div>
+            <h2>Pregunta</h2>
+            <div class="phrase-box">
+              <div class="phrase-main" id="questionText">Je ___ mange ___</div>
+              <div class="hint" id="hintText">Completa la negación correcta.</div>
+              <div id="optionsContainer" class="options" style="display:none;"></div>
+              <input id="fillInput" class="fill-input" type="text" placeholder="Escribe aquí" style="display:none;" />
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="verify" id="verifyButton">Verificar</button>
+          </div>
+          <div class="feedback" id="feedback"></div>
+          <div class="rideout" id="nextPrompt">
+            <span id="roundInfo">Ronda 1 / 3</span>
+            <button class="button secondary" id="nextTurnButton">Siguiente turno</button>
+          </div>
+        </div>
+
+        <div class="card" id="endScreen" style="display:none;">
+          <div>
+            <h1>Partida terminada</h1>
+            <p>Felicitaciones a los equipos ganadores. Puedes reiniciar para otra partida.</p>
+          </div>
+          <div class="podium" id="podium"></div>
+          <button class="button" id="restartButton">Reiniciar juego</button>
+          <div class="confetti" id="confetti"></div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div>
+          <h2>Marcador</h2>
+          <p>Puntos por equipos en tiempo real.</p>
+        </div>
+        <div class="leaderboard" id="leaderboard"></div>
+        <div class="card" style="background: rgba(255,255,255,0.03);">
+          <h3>Instrucciones rápidas</h3>
+          <ul style="padding-left: 18px; margin: 0; color: var(--text-muted); line-height:1.8;">
+            <li>Responde la pregunta usando el teclado o seleccionando opción.</li>
+            <li>Haz clic en "Verificar" para comprobar.</li>
+            <li>Puntos se suman al equipo automáticamente.</li>
+            <li>3 rondas completas, luego podio.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { type: 'multiple', question: 'Je mange', options: ['ne ... pas', 'ne ... plus', 'ne ... jamais'], correct: 0 },
+      { type: 'fill', question: 'Je ___ mange ___', answer: 'ne pas' },
+      { type: 'multiple', question: 'Tu parles', options: ['ne ... pas', 'ne ... rien', 'ne ... jamais'], correct: 0 },
+      { type: 'fill', question: 'Tu ___ parles ___', answer: 'ne pas' },
+      { type: 'multiple', question: 'Il regarde', options: ['ne ... pas', 'ne ... plus', 'ne ... rien'], correct: 0 },
+      { type: 'fill', question: 'Il ___ regarde ___', answer: 'ne pas' },
+      { type: 'multiple', question: 'Nous ecoutons', options: ['ne ... pas', 'ne ... plus', 'ne ... jamais'], correct: 0 },
+      { type: 'fill', question: 'Nous ___ ecoutons ___', answer: 'ne ecoutons pas' },
+      { type: 'multiple', question: 'Vous travaillez', options: ['ne ... pas', 'ne ... rien', 'ne ... jamais'], correct: 0 },
+      { type: 'fill', question: 'Vous ___ travaillez ___', answer: 'ne travaillez pas' },
+      { type: 'multiple', question: 'Elles chantent', options: ['ne ... pas', 'ne ... plus', 'ne ... rien'], correct: 0 },
+      { type: 'fill', question: 'Elles ___ chantent ___', answer: 'ne chantent pas' },
+      { type: 'multiple', question: 'Je comprends', options: ['ne ... plus', 'ne ... pas', 'ne ... jamais'], correct: 0 },
+      { type: 'fill', question: 'Je ___ comprends ___', answer: 'ne comprends plus' },
+      { type: 'multiple', question: 'Tu oublies', options: ['ne ... plus', 'ne ... rien', 'ne ... jamais'], correct: 0 },
+      { type: 'fill', question: 'Tu ___ oublies ___', answer: 'ne oublies plus' },
+      { type: 'multiple', question: 'Il court', options: ['ne ... plus', 'ne ... pas', 'ne ... rien'], correct: 0 },
+      { type: 'fill', question: 'Il ___ court ___', answer: 'ne court plus' },
+      { type: 'multiple', question: 'Nous avons', options: ['ne ... plus', 'ne ... jamais', 'ne ... rien'], correct: 0 },
+      { type: 'fill', question: 'Nous ___ avons ___', answer: 'ne avons plus' },
+      { type: 'multiple', question: 'Vous savez', options: ['ne ... plus', 'ne ... pas', 'ne ... rien'], correct: 0 },
+      { type: 'fill', question: 'Vous ___ savez ___', answer: 'ne savez plus' },
+      { type: 'multiple', question: 'Elles veulent', options: ['ne ... plus', 'ne ... jamais', 'ne ... rien'], correct: 0 },
+      { type: 'fill', question: 'Elles ___ veulent ___', answer: 'ne veulent plus' },
+      { type: 'multiple', question: 'Je vois', options: ['ne ... jamais', 'ne ... pas', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Je ___ vois ___', answer: 'ne vois jamais' },
+      { type: 'multiple', question: 'Tu dis', options: ['ne ... jamais', 'ne ... rien', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Tu ___ dis ___', answer: 'ne dis jamais' },
+      { type: 'multiple', question: 'Il vend', options: ['ne ... jamais', 'ne ... pas', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Il ___ vend ___', answer: 'ne vend jamais' },
+      { type: 'multiple', question: 'Nous mangeons', options: ['ne ... jamais', 'ne ... rien', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Nous ___ mangeons ___', answer: 'ne mangeons jamais' },
+      { type: 'multiple', question: 'Vous faites', options: ['ne ... jamais', 'ne ... pas', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Vous ___ faites ___', answer: 'ne faites jamais' },
+      { type: 'multiple', question: 'Elles disent', options: ['ne ... jamais', 'ne ... rien', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Elles ___ disent ___', answer: 'ne disent jamais' },
+      { type: 'multiple', question: 'Je veux', options: ['ne ... rien', 'ne ... pas', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Je ___ veux ___', answer: 'ne veux rien' },
+      { type: 'multiple', question: 'Tu cherches', options: ['ne ... rien', 'ne ... jamais', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Tu ___ cherches ___', answer: 'ne cherches rien' },
+      { type: 'multiple', question: 'Il attend', options: ['ne ... rien', 'ne ... pas', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Il ___ attend ___', answer: 'ne attend rien' },
+      { type: 'multiple', question: 'Nous ecrivons', options: ['ne ... rien', 'ne ... jamais', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Nous ___ ecrivons ___', answer: 'ne ecrivons rien' },
+      { type: 'multiple', question: 'Vous touchez', options: ['ne ... rien', 'ne ... pas', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Vous ___ touchez ___', answer: 'ne touchez rien' },
+      { type: 'multiple', question: 'Elles prennent', options: ['ne ... rien', 'ne ... jamais', 'ne ... plus'], correct: 0 },
+      { type: 'fill', question: 'Elles ___ prennent ___', answer: 'ne prennent rien' }
+    ];
+
+    const gameModeSelect = document.getElementById('gameMode');
+    const individualConfig = document.getElementById('individualConfig');
+    const teamsConfig = document.getElementById('teamsConfig');
+    const playerCountInput = document.getElementById('playerCount');
+    const namesContainer = document.getElementById('namesContainer');
+    const teamCountInput = document.getElementById('teamCount');
+    const playersPerTeamInput = document.getElementById('playersPerTeam');
+    const teamsContainer = document.getElementById('teamsContainer');
+    const startButton = document.getElementById('startButton');
+    const startScreen = document.getElementById('startScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const endScreen = document.getElementById('endScreen');
+    const leaderboardEl = document.getElementById('leaderboard');
+    const currentTurnTag = document.getElementById('currentTurnTag');
+    const questionText = document.getElementById('questionText');
+    const hintText = document.getElementById('hintText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const fillInput = document.getElementById('fillInput');
+    const verifyButton = document.getElementById('verifyButton');
+    const feedback = document.getElementById('feedback');
+    const nextPrompt = document.getElementById('nextPrompt');
+    const nextTurnButton = document.getElementById('nextTurnButton');
+    const roundInfo = document.getElementById('roundInfo');
+    const podiumEl = document.getElementById('podium');
+    const restartButton = document.getElementById('restartButton');
+    const confetti = document.getElementById('confetti');
+
+    const rounds = 3;
+    let teams = [];
+    let currentTurn = 0;
+    let totalTurns = 0;
+    let selectedOption = null;
+
+    function toggleMode() {
+      if (gameModeSelect.value === 'individual') {
+        individualConfig.style.display = 'block';
+        teamsConfig.style.display = 'none';
+        createPlayerInputs();
+      } else {
+        individualConfig.style.display = 'none';
+        teamsConfig.style.display = 'block';
+        createTeamInputs();
+      }
+    }
+
+    function createPlayerInputs() {
+      namesContainer.innerHTML = '';
+      const count = Math.max(2, Math.min(14, Number(playerCountInput.value || 2)));
+      for (let i = 1; i <= count; i += 1) {
+        const field = document.createElement('div');
+        field.className = 'field';
+        field.innerHTML = `<label for="player${i}">Jugador ${i}</label><input id="player${i}" type="text" placeholder="Nombre ${i}" value="Jugador ${i}" maxlength="16" />`;
+        namesContainer.appendChild(field);
+      }
+    }
+
+    function createTeamInputs() {
+      teamsContainer.innerHTML = '';
+      const teamCount = Math.max(2, Math.min(4, Number(teamCountInput.value || 2)));
+      const playersPerTeam = Math.max(2, Math.min(6, Number(playersPerTeamInput.value || 2)));
+      for (let t = 1; t <= teamCount; t += 1) {
+        const teamCard = document.createElement('div');
+        teamCard.className = 'card';
+        teamCard.innerHTML = `<h3>Equipe ${t}</h3><div class="field"><label for="team${t}Name">Nombre del equipo</label><input id="team${t}Name" type="text" placeholder="Equipe ${t}" value="Equipe ${t}" maxlength="20" /></div>`;
+        const playersDiv = document.createElement('div');
+        playersDiv.className = 'card';
+        for (let p = 1; p <= playersPerTeam; p += 1) {
+          const field = document.createElement('div');
+          field.className = 'field';
+          field.innerHTML = `<label for="team${t}Player${p}">Jugador ${p}</label><input id="team${t}Player${p}" type="text" placeholder="Jugador ${p}" value="Jugador ${p}" maxlength="16" />`;
+          playersDiv.appendChild(field);
+        }
+        teamCard.appendChild(playersDiv);
+        teamsContainer.appendChild(teamCard);
+      }
+    }
+
+    function createTeams() {
+      teams = [];
+      if (gameModeSelect.value === 'individual') {
+        const count = Math.max(2, Math.min(14, Number(playerCountInput.value || 2)));
+        for (let i = 1; i <= count; i += 1) {
+          const input = document.getElementById(`player${i}`);
+          const name = input?.value.trim() || `Jugador ${i}`;
+          teams.push({ name: `Equipo ${i}`, players: [name], score: 0 });
+        }
+      } else {
+        const teamCount = Math.max(2, Math.min(4, Number(teamCountInput.value || 2)));
+        const playersPerTeam = Math.max(2, Math.min(6, Number(playersPerTeamInput.value || 2)));
+        for (let t = 1; t <= teamCount; t += 1) {
+          const teamNameInput = document.getElementById(`team${t}Name`);
+          const teamName = teamNameInput?.value.trim() || `Equipe ${t}`;
+          const players = [];
+          for (let p = 1; p <= playersPerTeam; p += 1) {
+            const playerInput = document.getElementById(`team${t}Player${p}`);
+            const playerName = playerInput?.value.trim() || `Jugador ${p}`;
+            players.push(playerName);
+          }
+          teams.push({ name: teamName, players, score: 0 });
+        }
+      }
+      totalTurns = teams.length * teams[0].players.length * rounds;
+    }
+
+    function updateLeaderboard() {
+      const sorted = [...teams].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+      leaderboardEl.innerHTML = '';
+      sorted.forEach((team, index) => {
+        const item = document.createElement('div');
+        item.className = 'leaderboard-item';
+        item.innerHTML = `<strong>${index + 1}. ${team.name}</strong><span>${team.score} pts</span>`;
+        leaderboardEl.appendChild(item);
+      });
+    }
+
+    function getQuestionForTurn(index) {
+      return questions[index % questions.length];
+    }
+
+    function showGameScreen() {
+      startScreen.style.display = 'none';
+      endScreen.style.display = 'none';
+      gameScreen.style.display = 'grid';
+      nextPrompt.classList.remove('show');
+      feedback.style.display = 'none';
+      updateLeaderboard();
+      renderTurn();
+    }
+
+    function renderTurn() {
+      const teamIndex = Math.floor(currentTurn / teams[0].players.length) % teams.length;
+      const playerIndex = currentTurn % teams[0].players.length;
+      const team = teams[teamIndex];
+      const player = team.players[playerIndex];
+      currentTurnTag.textContent = `Turno de ${team.name} - Jugador: ${player}`;
+      const question = getQuestionForTurn(currentTurn);
+      questionText.textContent = question.question;
+      hintText.textContent = question.type === 'multiple' ? 'Selecciona la opción correcta.' : 'Completa la negación.';
+      if (question.type === 'multiple') {
+        optionsContainer.style.display = 'grid';
+        fillInput.style.display = 'none';
+        optionsContainer.innerHTML = '';
+        selectedOption = null;
+        question.options.forEach((option, index) => {
+          const opt = document.createElement('div');
+          opt.className = 'option';
+          opt.textContent = option;
+          opt.addEventListener('click', () => selectOption(index));
+          optionsContainer.appendChild(opt);
+        });
+      } else {
+        optionsContainer.style.display = 'none';
+        fillInput.style.display = 'block';
+        fillInput.value = '';
+        fillInput.focus();
+      }
+      roundInfo.textContent = `Ronda ${Math.floor(currentTurn / (teams.length * teams[0].players.length)) + 1} / ${rounds}`;
+      nextPrompt.classList.remove('show');
+    }
+
+    function selectOption(index) {
+      selectedOption = index;
+      document.querySelectorAll('.option').forEach((opt, i) => {
+        opt.classList.toggle('selected', i === index);
+      });
+    }
+
+    function verifyAnswer() {
+      const question = getQuestionForTurn(currentTurn);
+      const teamIndex = Math.floor(currentTurn / teams[0].players.length) % teams.length;
+      let correct = false;
+      if (question.type === 'multiple') {
+        correct = selectedOption === question.correct;
+      } else {
+        const userAnswer = fillInput.value.trim().toLowerCase().replace(/\s+/g, '');
+        const expected = question.answer.toLowerCase().replace(/\s+/g, '');
+        correct = userAnswer === expected;
+      }
+      feedback.textContent = correct ? 'Correcto +10 puntos' : `Incorrecto. La respuesta correcta es: ${question.type === 'multiple' ? question.options[question.correct] : question.answer}`;
+      feedback.className = `feedback ${correct ? 'correct' : 'incorrect'}`;
+      feedback.style.display = 'block';
+      if (correct) {
+        teams[teamIndex].score += 10;
+        updateLeaderboard();
+      }
+      nextPrompt.classList.add('show');
+    }
+
+    function nextTurn() {
+      currentTurn += 1;
+      if (currentTurn >= totalTurns) {
+        showEndScreen();
+      } else {
+        renderTurn();
+      }
+    }
+
+    function showEndScreen() {
+      gameScreen.style.display = 'none';
+      endScreen.style.display = 'grid';
+      const sorted = [...teams].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+      podiumEl.innerHTML = '';
+      const podium = [sorted[1], sorted[0], sorted[2]];
+      const places = ['second', 'first', 'third'];
+      podium.forEach((team, index) => {
+        if (!team) return;
+        const card = document.createElement('div');
+        card.className = `podium-card ${places[index]}`;
+        card.innerHTML = `<span>${index === 0 ? '2. lugar' : index === 1 ? '1. lugar' : '3. lugar'}</span><strong>${team.name}</strong><span>${team.score} pts</span><div class="step">${index === 0 ? 'Segunda plaza' : index === 1 ? 'Campeon' : 'Tercera plaza'}</div>`;
+        podiumEl.appendChild(card);
+      });
+      launchConfetti();
+    }
+
+    function launchConfetti() {
+      confetti.innerHTML = '';
+      const colors = ['#6adeff', '#ff6fa3', '#ffd35f', '#a885ff'];
+      for (let i = 0; i < 40; i += 1) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        const size = Math.random() * 12 + 8;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${size}px`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.top = `${-Math.random() * 200 - 50}px`;
+        piece.style.animationDuration = `${Math.random() * 1.2 + 2}s`;
+        piece.style.animationDelay = `${Math.random() * 1.2}s`;
+        confetti.appendChild(piece);
+      }
+    }
+
+    gameModeSelect.addEventListener('change', toggleMode);
+    playerCountInput.addEventListener('change', createPlayerInputs);
+    teamCountInput.addEventListener('change', createTeamInputs);
+    playersPerTeamInput.addEventListener('change', createTeamInputs);
+    startButton.addEventListener('click', () => {
+      createTeams();
+      currentTurn = 0;
+      showGameScreen();
+    });
+    verifyButton.addEventListener('click', verifyAnswer);
+    nextTurnButton.addEventListener('click', nextTurn);
+    restartButton.addEventListener('click', () => {
+      endScreen.style.display = 'none';
+      startScreen.style.display = 'block';
+      toggleMode();
+    });
+
+    toggleMode();
+    updateLeaderboard();
+  </script>
+</body>
+</html>
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 12px 18px;
+      color: var(--accent);
+      font-weight: 700;
+      width: fit-content;
+      animation: pulse 2s ease infinite;
+    }
+
+    .timer-box {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 26px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .timer-ring {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle, rgba(106, 222, 255, 0.16), transparent 56%);
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ring-progress {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+
+    .ring-progress svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .ring-progress circle {
+      fill: none;
+      stroke-width: 12;
+      stroke-linecap: round;
+    }
+
+    .ring-progress .track {
+      stroke: rgba(255, 255, 255, 0.08);
+    }
+
+    .ring-progress .progress {
+      stroke: var(--accent);
+      stroke-dasharray: 565.48;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.25s linear;
+    }
+
+    .time-label {
+      text-align: center;
+    }
+
+    .time-label strong {
+      display: block;
+      font-size: clamp(2rem, 3vw, 3rem);
+      color: var(--text);
+    }
+
+    .phrase-box {
+      display: grid;
+      gap: 20px;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 260px;
+      justify-content: center;
+    }
+
+    .phrase-box .hint {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+
+    .phrase-main {
+      font-size: clamp(2rem, 3.2vw, 4rem);
+      letter-spacing: 0.01em;
+      line-height: 1.05;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 12px;
+    }
+
+    .action-buttons button {
+      min-height: 90px;
+      border-radius: 24px;
+      font-size: 1.15rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.22);
+    }
+
+    .verify {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #081020;
+    }
+
+    .small-note {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+    }
+
+    .rideout {
+      display: none;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .rideout.show {
+      display: flex;
+    }
+
+    .podium {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      align-items: end;
+      margin-top: 30px;
+    }
+
+    .podium-card {
+      position: relative;
+      border-radius: 28px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      display: grid;
+      gap: 16px;
+    }
+
+    .podium-card span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .podium-card strong {
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+
+    .podium-card .step {
+      position: absolute;
+      inset: auto 20px 20px;
+      height: 80px;
+      width: calc(100% - 40px);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.06);
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .podium-card.first .step { background: rgba(110, 222, 255, 0.13); }
+    .podium-card.second .step { background: rgba(255, 111, 163, 0.12); }
+    .podium-card.third .step { background: rgba(184, 137, 255, 0.12); }
+
+    .confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      opacity: 0.9;
+      border-radius: 3px;
+      animation: fall 2.5s ease-in infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(760px) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    @media (max-width: 1080px) {
+      .grid { grid-template-columns: 1fr; }
+      .sidebar { border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
+      .podium { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="hero-glow"></div>
+    <div class="grid">
+      <section class="screen" id="screen">
+        <div class="card" id="startScreen">
+          <div>
+            <h1>Juego de Negación en Francés</h1>
+            <p>Perfecto para grupos de 2 a 14 estudiantes. Configura jugadores, juega 3 rondas y convierte las frases afirmativas en negativas antes de que termine el tiempo.</p>
+          </div>
+          <div class="field">
+            <label for="playerCount">Número de jugadores</label>
+            <input id="playerCount" type="number" min="2" max="14" value="4" />
+          </div>
+          <div class="card" id="namesContainer"></div>
+          <button class="button" id="startButton">Iniciar partida</button>
+          <p class="small-note">Los moderadores pueden usar los botones grandes para marcar si la respuesta fue correcta o incorrecta.</p>
+        </div>
+
+        <div class="card current-turn-card" id="gameScreen" style="display:none;">
+          <div class="player-tag">Turno de <span id="currentPlayerName">Jugador</span></div>
+          <div class="timer-box">
+            <div class="timer-ring">
+              <div class="ring-progress">
+                <svg viewBox="0 0 180 180">
+                  <circle class="track" cx="90" cy="90" r="88"></circle>
+                  <circle class="progress" cx="90" cy="90" r="88"></circle>
+                </svg>
+              </div>
+              <div class="time-label">
+                <strong id="timeLeft">15</strong>
+                segundos
+              </div>
+            </div>
+            <div>
+              <h2>Frase para transformar</h2>
+              <div class="phrase-box">
+                <div class="phrase-main" id="phraseText">Je mange</div>
+                <div class="hint">Dilo en voz alta en francés, usando la negación correcta antes de que suene el tiempo.</div>
+              </div>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="correct" id="correctButton">¡Correcto! +10</button>
+            <button class="incorrect" id="incorrectButton">Incorrecto</button>
+          </div>
+          <div class="rideout" id="nextPrompt">
+            <span id="roundInfo">Ronda 1 / 3</span>
+            <button class="button secondary" id="nextTurnButton">Siguiente turno</button>
+          </div>
+        </div>
+
+        <div class="card" id="endScreen" style="display:none;">
+          <div>
+            <h1>¡Partida terminada!</h1>
+            <p>Felicitaciones, aquí están los mejores 3 jugadores. Puedes reiniciar y jugar otra ronda con tus alumnos.</p>
+          </div>
+          <div class="podium" id="podium"></div>
+          <button class="button" id="restartButton">Reiniciar juego</button>
+          <div class="confetti" id="confetti"></div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div>
+          <h2>Leaderboard</h2>
+          <p>Las puntuaciones se actualizan en tiempo real.</p>
+        </div>
+        <div class="leaderboard" id="leaderboard"></div>
+        <div class="card" style="background: rgba(255,255,255,0.03);">
+          <h3>Instrucciones rápidas</h3>
+          <ul style="padding-left: 18px; margin: 0; color: var(--text-muted); line-height:1.8;">
+            <li>El jugador dice la frase negativa en voz alta.</li>
+            <li>El moderador marca si está correcta o incorrecta.</li>
+            <li>Se repiten 3 rondas completas.</li>
+            <li>El podio aparece al terminar.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const phrases = [
+      { text: 'Je mange', answer: 'Je ne mange pas' },
+      { text: 'Tu parles', answer: 'Tu ne parles pas' },
+      { text: 'Il regarde', answer: 'Il ne regarde pas' },
+      { text: 'Nous écoutons', answer: 'Nous n\'écoutons pas' },
+      { text: 'Vous travaillez', answer: 'Vous ne travaillez pas' },
+      { text: 'Elles chantent', answer: 'Elles ne chantent pas' },
+      { text: 'Je joue', answer: 'Je ne joue pas' },
+      { text: 'Tu finis', answer: 'Tu ne finis pas' },
+      { text: 'Il vend', answer: 'Il ne vend pas' },
+      { text: 'Nous aimons', answer: 'Nous n\'aimons pas' },
+      { text: 'Vous ouvrez', answer: 'Vous n\'ouvrez pas' },
+      { text: 'Elles lisent', answer: 'Elles ne lisent pas' },
+      { text: 'Je comprends', answer: 'Je ne comprends plus' },
+      { text: 'Tu oublies', answer: 'Tu n\'oublies plus' },
+      { text: 'Il court', answer: 'Il ne court plus' },
+      { text: 'Nous avons', answer: 'Nous n\'avons plus' },
+      { text: 'Vous savez', answer: 'Vous ne savez plus' },
+      { text: 'Elles veulent', answer: 'Elles ne veulent plus' },
+      { text: 'Je vois', answer: 'Je ne vois jamais' },
+      { text: 'Tu dis', answer: 'Tu ne dis jamais' },
+      { text: 'Il vend', answer: 'Il ne vend jamais' },
+      { text: 'Nous mangeons', answer: 'Nous ne mangeons jamais' },
+      { text: 'Vous faites', answer: 'Vous ne faites jamais' },
+      { text: 'Elles disent', answer: 'Elles ne disent jamais' },
+      { text: 'Je veux', answer: 'Je ne veux rien' },
+      { text: 'Tu cherches', answer: 'Tu ne cherches rien' },
+      { text: 'Il attend', answer: 'Il n\'attend rien' },
+      { text: 'Nous écrivons', answer: 'Nous n\'écrivons rien' },
+      { text: 'Vous touchez', answer: 'Vous ne touchez rien' },
+      { text: 'Elles prennent', answer: 'Elles ne prennent rien' }
+    ];
+
+    const playerCountInput = document.getElementById('playerCount');
+    const namesContainer = document.getElementById('namesContainer');
+    const startButton = document.getElementById('startButton');
+    const startScreen = document.getElementById('startScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const endScreen = document.getElementById('endScreen');
+    const leaderboardEl = document.getElementById('leaderboard');
+    const currentPlayerName = document.getElementById('currentPlayerName');
+    const phraseText = document.getElementById('phraseText');
+    const timeLeftEl = document.getElementById('timeLeft');
+    const roundInfo = document.getElementById('roundInfo');
+    const correctButton = document.getElementById('correctButton');
+    const incorrectButton = document.getElementById('incorrectButton');
+    const nextPrompt = document.getElementById('nextPrompt');
+    const nextTurnButton = document.getElementById('nextTurnButton');
+    const podiumEl = document.getElementById('podium');
+    const restartButton = document.getElementById('restartButton');
+    const confetti = document.getElementById('confetti');
+
+    const progressCircle = document.querySelector('.progress');
+    const totalSeconds = 15;
+    const rounds = 3;
+    let players = [];
+    let currentTurn = 0;
+    let totalTurns = 0;
+    let timer = null;
+    let secondsRemaining = totalSeconds;
+
+    function createPlayerInputs() {
+      namesContainer.innerHTML = '';
+      const count = Math.max(2, Math.min(14, Number(playerCountInput.value || 2)));
+      for (let i = 1; i <= count; i += 1) {
+        const field = document.createElement('div');
+        field.className = 'field';
+        field.innerHTML = `<label for="player${i}">Jugador ${i}</label><input id="player${i}" type="text" placeholder="Nombre ${i}" value="Jugador ${i}" maxlength="16" />`;
+        namesContainer.appendChild(field);
+      }
+    }
+
+    function createPlayers() {
+      const count = Math.max(2, Math.min(14, Number(playerCountInput.value || 2)));
+      players = [];
+      for (let i = 1; i <= count; i += 1) {
+        const input = document.getElementById(`player${i}`);
+        const name = input?.value.trim() || `Jugador ${i}`;
+        players.push({ name, score: 0 });
+      }
+      totalTurns = players.length * rounds;
+    }
+
+    function updateLeaderboard() {
+      const sorted = [...players].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+      leaderboardEl.innerHTML = '';
+      sorted.forEach((player, index) => {
+        const item = document.createElement('div');
+        item.className = 'leaderboard-item';
+        item.innerHTML = `<strong>${index + 1}. ${player.name}</strong><span>${player.score} pts</span>`;
+        leaderboardEl.appendChild(item);
+      });
+    }
+
+    function getPhraseForTurn(index) {
+      return phrases[index % phrases.length];
+    }
+
+    function showGameScreen() {
+      startScreen.style.display = 'none';
+      endScreen.style.display = 'none';
+      gameScreen.style.display = 'grid';
+      nextPrompt.classList.remove('show');
+      updateLeaderboard();
+      renderTurn();
+    }
+
+    function renderTurn() {
+      const playerIndex = currentTurn % players.length;
+      const currentPlayer = players[playerIndex];
+      const phrase = getPhraseForTurn(currentTurn);
+      currentPlayerName.textContent = currentPlayer.name;
+      phraseText.textContent = phrase.text;
+      roundInfo.textContent = `Ronda ${Math.floor(currentTurn / players.length) + 1} / ${rounds}`;
+      secondsRemaining = totalSeconds;
+      timeLeftEl.textContent = secondsRemaining;
+      setProgress(1);
+      nextPrompt.classList.remove('show');
+      startCountdown();
+    }
+
+    function setProgress(fraction) {
+      const circumference = 2 * Math.PI * 88;
+      progressCircle.style.strokeDashoffset = circumference * (1 - fraction);
+    }
+
+    function startCountdown() {
+      stopCountdown();
+      playTick();
+      timer = setInterval(() => {
+        secondsRemaining -= 1;
+        if (secondsRemaining < 0) {
+          secondsRemaining = 0;
+        }
+        const fraction = secondsRemaining / totalSeconds;
+        timeLeftEl.textContent = secondsRemaining;
+        setProgress(fraction);
+        if (secondsRemaining === 0) {
+          stopCountdown();
+          nextPrompt.classList.add('show');
+          return;
+        }
+        playTick();
+      }, 1000);
+    }
+
+    function stopCountdown() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    function playTick() {
+      if (!window.AudioContext && !window.webkitAudioContext) return;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const context = new AudioCtx();
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = secondsRemaining <= 3 ? 980 : 620;
+      gain.gain.value = 0.12;
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.1);
+      oscillator.onended = () => context.close();
+    }
+
+    function applyScore(points) {
+      stopCountdown();
+      const playerIndex = currentTurn % players.length;
+      players[playerIndex].score += points;
+      updateLeaderboard();
+      nextPrompt.classList.add('show');
+    }
+
+    function nextTurn() {
+      currentTurn += 1;
+      if (currentTurn >= totalTurns) {
+        showEndScreen();
+      } else {
+        renderTurn();
+      }
+    }
+
+    function showEndScreen() {
+      stopCountdown();
+      gameScreen.style.display = 'none';
+      endScreen.style.display = 'grid';
+      const sorted = [...players].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+      podiumEl.innerHTML = '';
+      const podium = [sorted[1], sorted[0], sorted[2]];
+      const places = ['second', 'first', 'third'];
+      podium.forEach((player, index) => {
+        if (!player) return;
+        const card = document.createElement('div');
+        card.className = `podium-card ${places[index]}`;
+        card.innerHTML = `<span>${index === 0 ? '2.º lugar' : index === 1 ? '1.º lugar' : '3.º lugar'}</span><strong>${player.name}</strong><span>${player.score} pts</span><div class="step">${index === 0 ? 'Segunda plaza' : index === 1 ? 'Campeón' : 'Tercera plaza'}</div>`;
+        podiumEl.appendChild(card);
+      });
+      launchConfetti();
+    }
+
+    function launchConfetti() {
+      confetti.innerHTML = '';
+      const colors = ['#6adeff', '#ff6fa3', '#ffd35f', '#a885ff'];
+      for (let i = 0; i < 40; i += 1) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        const size = Math.random() * 12 + 8;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${size}px`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.top = `${-Math.random() * 200 - 50}px`;
+        piece.style.animationDuration = `${Math.random() * 1.2 + 2}s`;
+        piece.style.animationDelay = `${Math.random() * 1.2}s`;
+        confetti.appendChild(piece);
+      }
+    }
+
+    playerCountInput.addEventListener('change', createPlayerInputs);
+    startButton.addEventListener('click', () => {
+      createPlayers();
+      currentTurn = 0;
+      showGameScreen();
+    });
+
+    correctButton.addEventListener('click', () => applyScore(10));
+    incorrectButton.addEventListener('click', () => applyScore(0));
+    nextTurnButton.addEventListener('click', nextTurn);
+    restartButton.addEventListener('click', () => {
+      endScreen.style.display = 'none';
+      startScreen.style.display = 'block';
+      createPlayerInputs();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (gameScreen.style.display === 'grid') {
+        if (event.key.toLowerCase() === 'c') applyScore(10);
+        if (event.key.toLowerCase() === 'i') applyScore(0);
+        if (event.key.toLowerCase() === 'n' && nextPrompt.classList.contains('show')) nextTurn();
+      }
+    });
+
+    createPlayerInputs();
+    updateLeaderboard();
+  </script>
+</body>
+</html>
